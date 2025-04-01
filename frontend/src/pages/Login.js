@@ -1,13 +1,32 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+import API from '../utils/api';
 
-  const handleSubmit = (e) => {
+function Login() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Logging in with", { email, password });
+    
+    try {
+      const response = await API.post('/api/login/', formData);
+      // Store user data in localStorage or context
+      localStorage.setItem('user', JSON.stringify(response.data));
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Login failed');
+    }
   };
 
   return (
@@ -15,20 +34,23 @@ const Login = () => {
       <div className="bg-white p-8 rounded shadow-lg w-96">
         <h2 className="text-2xl font-bold text-center text-purple-900 mb-4">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <label>Email</label>
           <input
             type="email"
-            placeholder="Email"
+            name="email" 
+            value={formData.email}
             className="w-full p-2 border rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleChange}
             required
           />
+
+          <label>Password</label>
           <input
             type="password"
-            placeholder="Password"
+            name="password"
+            value={formData.password}
             className="w-full p-2 border rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleChange}
             required
           />
           <button type="submit" className="w-full bg-purple-700 text-white p-2 rounded">

@@ -1,15 +1,14 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import DriverLogViewSet
-# from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-# from . import views
-
-router = DefaultRouter()
-router.register(r'logs', DriverLogViewSet)
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('app/', include(router.urls)),
-    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('', views.driver_log_view, name='driver_log'), 
+    
+    
+    # creating API endpoints
+    path('api/logs/<int:pk>/', views.driver_log_detail, name='driver_log_detail'),
+    path('api/register/', views.register_user, name='register_user'),
+    path('api/login/', views.login_user, name='login_user'),
+    path('api/profile/', views.user_profile, name='user_profile'),
 
 ]

@@ -1,25 +1,36 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+
+import API from '../utils/api';
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    full_name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
+
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+
+    try {
+      const response = await API.post('/api/register/', formData);
+      if (response.data.success) {
+        navigate('/login');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Registration failed');
     }
-    console.log("Registering with", formData);
   };
 
   return (
@@ -27,34 +38,41 @@ const Register = () => {
       <div className="bg-white p-8 rounded shadow-lg w-96">
         <h2 className="text-2xl font-bold text-center text-purple-900 mb-4">Register</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+        <label>Full Name</label>
           <input
             type="text"
-            name="name"
-            placeholder="Full Name"
+            name="full_name"
+            value={formData.full_name}
             className="w-full p-2 border rounded"
             onChange={handleChange}
             required
           />
+
+          <label>Email</label>
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            value={formData.email}
             className="w-full p-2 border rounded"
             onChange={handleChange}
             required
           />
+
+          <label>Password</label>
           <input
             type="password"
             name="password"
-            placeholder="Password"
+            value={formData.password}
             className="w-full p-2 border rounded"
             onChange={handleChange}
             required
           />
+
+          <label>Confirm Password</label>
           <input
             type="password"
             name="confirmPassword"
-            placeholder="Confirm Password"
+            value={formData.confirm_password}
             className="w-full p-2 border rounded"
             onChange={handleChange}
             required
